@@ -201,6 +201,10 @@ def process_subjects(subs,auto_detect_progress,process_field_maps,input_dir,outp
             subject_dir = os.path.join(input_dir, subject, session) # this may change later on
             session_directory = session
 
+            if not os.path.exists(subject_dir):
+                message = "Path " + subject_dir + " does not exist for " + subject + " in the input folder."
+                raise Exception(message)
+
             ############ process the T1's
             anatomical_images = [name for name in glob.glob(subject_dir+'/*T1_MPR*')]
             anatomical_image_out = 'anat' # output directory name
