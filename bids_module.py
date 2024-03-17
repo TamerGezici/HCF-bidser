@@ -84,15 +84,6 @@ def generate_task_jsons(task_settings,output_dir):
 
 def check_progress(progress,progress_file_name,output_dir,all_sessions,subject_runs,progress_json_dir):
 
-    ## problem: 
-    ## progress is tracked on participant basis, whereas it should be on session basis.
-    ## and if a session file is deleted or the progress is interrupted, the only way to re-start
-    ## conversion is to modify the json file.
-    ## this needs to be worked on.
-    ## for all subjects, check if their corresponding session file exists
-    ## ditto, but also check for "done" flags for participants to make sure they have been processed.
-    ## if they are not done, then mark them as "not_done"
-
     f = os.path.join(progress_file_name)
     subjects_path = os.path.join(os.getcwd(),output_dir) # where to find subjects?
     
@@ -126,38 +117,6 @@ def check_progress(progress,progress_file_name,output_dir,all_sessions,subject_r
                     progress[session][subject] = 'not_done'    
 
     write_json(progress,progress_json_dir,progress_file_name)
-
-    """        missing_subjects = {session: [] for session in all_sessions}
-
-        for session in all_sessions:
-            if session not in progress.keys():
-                progress[session] = {}
-            if len(subject_runs[session]) != len(progress[session]):
-                for new_subject in subject_runs[session]:
-                    if new_subject not in progress[session]:
-                        progress[session] = {new_subject: 'not_done'}
-
-            for subject in progress[session].keys():
-                subj_dir = os.path.join(subjects_path,subject,session)
-                if not os.path.exists(subj_dir):
-                    print(subject," - ",session,": Processed data not found. Participant will be re-processed.")
-                    progress[session] = {subject: 'not_done'}
-                    missing_subjects[session].append(subject)
-
-            for subject in subs:
-                subj_dir = os.path.join(subjects_path,subject,session)
-                # if their progress was interrupted, delete their entire folder and start over.
-                if os.path.exists(subj_dir) and subject not in progress[session].keys():
-                    print(subject,": Process was interrupted. Participant will be re-processed.")
-                    progress[session] = {subject: 'not_done'}
-                    missing_subjects[session].append(subject)
-                    shutil.rmtree(subj_dir)
-                # if their file doesn't exist, re-process them.
-
-            subs = [x for x in subs if x not in list(progress[session].keys()) or x in missing_subjects[session]]
-            subs.extend(missing_subjects[session])
-
-        print("Previous conversion detected: ", list(progress[session].keys()), "will not be processed.")"""
     return progress
 
 def process_subjects(subs,auto_detect_progress,process_field_maps,input_dir,output_dir,progress_json_dir,progress_file_name,runs,subject_runs,task_settings,z_flag="3",use_nipype=False,deface_anatomical=False,subject_blocks={},exclude_subjects=[]):
